@@ -1,17 +1,21 @@
 import os
+import uuid
+import pandas as pd
 import pandasai as pai
 from pandasai_litellm.litellm import LiteLLM
 from dotenv import load_dotenv
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from google import genai
 
-# Getting API key from ENV
+# Getting API key from env
 load_dotenv()
 api_key = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=api_key)
 
-# Configure PandasAI with LiteLLM
+# Global sessions storage, for storing dataframes
+dataframes = {}
+
 llm = LiteLLM(model="gemini/gemini-2.5-flash-lite", api_key=api_key)
 # Global configuration for PandasAI
 pai.config.set({"llm": llm})
@@ -55,3 +59,30 @@ async def test_pandas():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"PandasAI Test Failed: {str(e)}")
+
+@app.post("/test-upload-pandas")
+async def test_upload_pandas(file: UploadFile):
+    try:
+        # Generate a unique dataframe ID
+        dataframe_id = str(uuid.uuid4())
+        
+        # Read file
+        df_raw = pd.read_csv(file.file)
+        
+        # Store the dataframe with the generated ID
+        dataframes[dataframe_id] = pai.DataFrame(df_raw)
+        
+        # Test query
+        df = dataframes[dataframe_id]
+        prompt = "Which are the 5 happiest countries?"
+        response = df.chat(prompt)
+        
+        return {
+            "status": "success",
+            "dataframe_id": dataframe_id,
+            "filename": file.filename,
+            "query": prompt,
+            "response": str(response)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"PandasAI Upload Test Failed: {str(e)}")
