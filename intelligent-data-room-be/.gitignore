@@ -111,3 +111,6 @@ data
 
 # logs
 *.log
+
+# Exports
+exports

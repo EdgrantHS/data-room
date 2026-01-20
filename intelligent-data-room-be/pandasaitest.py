@@ -1,27 +1,15 @@
+import os
 import pandasai as pai
 from pandasai_litellm.litellm import LiteLLM
+from pandasai.core.response.chart import ChartResponse
+from dotenv import load_dotenv
 
-llm = LiteLLM(model="gemini/gemini-2.5-flash-lite", api_key="censored")
+load_dotenv()
+api_key = os.environ.get("GEMINI_API_KEY")
 
-pai.config.set({
-    "llm": llm
-})
+llm = LiteLLM(model="gemini/gemini-2.5-flash-lite", api_key=api_key)
+pai.config.set({"llm": llm})
 
-
-# # Load sample dataset
-# file_path = "data/Sample Superstore.csv"
-# df = pai.read_csv(file_path)
-
-# # Test query
-# prompt = "What are the top 5 states by total sales?"
-# print(f"Query: {prompt}")
-
-# response = df.chat(prompt)
-# print("\nResponse:")
-# print(response)
-
-
-# Hard data
 data = {
     "country": ["United States", "United Kingdom", "France", "Germany", "Italy", "Spain", "Canada", "Australia", "Japan", "China"],
     "gdp": [21400000, 2830000, 2710000, 3860000, 2000000, 1390000, 1730000, 1390000, 5080000, 14140000],
@@ -30,7 +18,17 @@ data = {
 df = pai.DataFrame(data)
 
 # Test query
-prompt = "Which are the 5 happiest countries?"
+prompt = "Graph countries by happiness_index"
+
+print("Prompt:", prompt)
 
 response = df.chat(prompt)
-print(response)
+print(f"Response type: {type(response)}")
+
+if isinstance(response, ChartResponse):
+    base64_img = response.get_base64_image()
+    print(f"Base64 image length: {len(base64_img)}")
+    print(f"base64 image:\ndata:image/png;base64,{base64_img}")
+else:
+    print("Response is not a chart.")
+    print(response)
