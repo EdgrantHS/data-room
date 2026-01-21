@@ -1,9 +1,19 @@
 from fastapi import FastAPI, UploadFile, File, Form
+from fastapi.middleware.cors import CORSMiddleware
 import pandasai as pai
 from modules.api_handler import APIHandler
 
 # Fast API app
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Global storage for dataframes
 dataframes: dict[str, pai.DataFrame] = {}
@@ -28,9 +38,9 @@ async def upload(file: UploadFile = File()):
     return await APIHandler.upload(file)
 
 @app.post("/generate-plan")
-async def generate_plan(dataframe_id: str = Form(...), prompt: str = Form(...)):
+async def generate_plan(dataframe_id: str = Form(), prompt: str = Form()):
     return await APIHandler.generate_plan_from_prompt(dataframe_id, prompt)
 
 @app.post("/execute-plan")
-async def execute_plan(dataframe_id: str = Form(...), plan: str = Form(...)):
+async def execute_plan(dataframe_id: str = Form(), plan: str = Form()):
     return await APIHandler.execute_plan_on_dataframe(dataframe_id, plan)
