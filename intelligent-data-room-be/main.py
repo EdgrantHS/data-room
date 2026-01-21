@@ -14,11 +14,12 @@ from google import genai
 load_dotenv()
 api_key = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=api_key)
+model_name = os.environ.get("MODEL_NAME", "gemini-2.5-flash-lite")
 
 # Global sessions storage, for storing dataframes
 dataframes = {}
 
-llm = LiteLLM(model="gemini/gemini-2.5-flash-lite", api_key=api_key)
+llm = LiteLLM(model="gemini/" + model_name, api_key=api_key)
 # Global configuration for PandasAI
 pai.config.set({
     "llm": llm,
@@ -43,8 +44,7 @@ app = FastAPI()
 async def test_key():
     try:
         response = client.models.generate_content(
-            # Using gemini 2.5 flash lite model
-            model="gemini-2.5-flash-lite", 
+            model=model_name,
             contents="Say 'Key is working!'"
         )
         return {"status": "success", "message": response.text}

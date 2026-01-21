@@ -6,8 +6,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 api_key = os.environ.get("GEMINI_API_KEY")
+model_name = os.environ.get("MODEL_NAME", "gemini-2.5-flash-lite")
 
-llm = LiteLLM(model="gemini/gemini-2.5-flash-lite", api_key=api_key)
+# llm = LiteLLM(model="gemini/gemini-2.5-flash-lite", api_key=api_key)
+llm = LiteLLM(model="gemini/" + model_name, api_key=api_key)
 pai.config.set({"llm": llm})
 
 data = {
