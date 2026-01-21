@@ -1,11 +1,17 @@
-import { Button } from "@/components/ui/button"
+import { Routes, Route } from "react-router-dom"
+import AIChat from "./pages/ai-chat"
+import ChallengeDescription from "./pages/challenge-description"
+import { Navbar } from "./components/custom/navbar"
 
 function App() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center bg-gray-100">
-      {/* <Button className="bg-red-500 text-white">Click me</Button> */}
-      <Button>Click me</Button>
-    </div>
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<AIChat />} />
+        <Route path="/challenge" element={<ChallengeDescription />} />
+      </Routes>
+    </>
   )
 }
 
