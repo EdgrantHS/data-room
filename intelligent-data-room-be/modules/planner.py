@@ -22,13 +22,19 @@ class Planner:
         except Exception as e:
             raise Exception(f"Gemini API generation failed: {str(e)}")
     
-    def generate_plan(self, prompt: str):
-        """Generates a plan using the Gemini model based on the prompt and dataframe header."""
+    def generate_plan(self, prompt: str, header: str):
+        """Generates a plan based on the prompt and dataframe header."""
         try:
-            response = self.client.models.generate_plan(
-                model=self.model_name,
-                contents="Generate a 5-step plan to answer the following prompt based on the dataframe header, only write the plan steps without any additional text: " + prompt
+            instruction = (
+                f"Generate a 5-step plan to answer the following prompt based on the dataframe header. "
+                f"Only write the plan steps without any additional text. "
+                f"Prompt: {prompt} \n"
+                f"Dataframe Header: {header}"
             )
-            return response.plan
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=instruction
+            )
+            return response.text
         except Exception as e:
             raise Exception(f"Gemini API plan generation failed: {str(e)}")

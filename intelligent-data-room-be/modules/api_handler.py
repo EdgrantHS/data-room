@@ -1,4 +1,3 @@
-import logging
 from fastapi import HTTPException, UploadFile
 import pandasai as pai
 
@@ -13,6 +12,8 @@ api_key, model_name = env.get_api_and_model()
 # Handlers will be initialized with a reference to main.py's dataframes
 pandas_handler = None
 planner = None
+
+dataframe_header = None
 
 class APIHandler:
     """Handles the logic of API endpoints"""
@@ -89,3 +90,53 @@ class APIHandler:
             }
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"PandasAI Upload Prompt Test Failed: {str(e)}")
+
+    @staticmethod
+    async def upload_get_head(file: UploadFile):
+        """Uploads a CSV and retrieves its head"""
+        try:
+            global dataframe_header
+            dataframe_id = pandas_handler.add_dataframe(file.file)
+            header = pandas_handler.get_head(dataframe_id)
+        
+            dataframe_header = header
+
+            return {
+                "status": "success",
+                "dataframe_id": dataframe_id,
+                "filename": file.filename,
+                "header": header
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Upload Get Head Failed: {str(e)}")
+    
+    @staticmethod
+    async def generate_plan_from_prompt(prompt: str):
+        """Generates a plan from a given prompt using the Planner"""
+        try:
+            if dataframe_header is None:
+                raise Exception("Dataframe header not set. Please upload a dataframe first.")
+            
+            plan = planner.generate_plan(prompt, dataframe_header)
+            return {
+                "status": "success",
+                "prompt": prompt,
+                "plan": plan
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Generate Plan Failed: {str(e)}")
+    
+    @staticmethod
+    async def execute_plan_on_dataframe(dataframe_id: str, plan: str):
+        """Executes a generated plan on a specified dataframe"""
+        
+        try:
+            response = pandas_handler.execute_plan(plan, dataframe_id)
+            return {
+                "status": "success",
+                "dataframe_id": dataframe_id,
+                "plan": plan,
+                "response": response
+            }
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Execute Plan Failed: {str(e)}")
