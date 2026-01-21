@@ -5,7 +5,6 @@ import {
   DropzoneContent,
 } from "@/components/ui/shadcn-io/dropzone";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 
 interface ChatInputProps {
   dataframeId: string | null;

@@ -2,7 +2,8 @@ import axios from "axios"
 import * as XLSX from "xlsx"
 import type { Message } from "./chat-messages"
 
-const API_BASE = "http://localhost:8000"
+// const API_BASE = "http://localhost:8000"
+const API_BASE = "https://data-room-tyad.onrender.com"
 
 // Handle file upload and update state accordingly
 export async function handleFileUpload(
