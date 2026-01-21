@@ -1,16 +1,20 @@
-import { type FormEvent } from "react"
-import { Dropzone, DropzoneEmptyState, DropzoneContent } from "@/components/ui/shadcn-io/dropzone"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
+import { type FormEvent } from "react";
+import {
+  Dropzone,
+  DropzoneEmptyState,
+  DropzoneContent,
+} from "@/components/ui/shadcn-io/dropzone";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 interface ChatInputProps {
-  dataframeId: string | null
-  inputValue: string
-  isProcessing: boolean
-  onFileUpload: (files: File[]) => void
-  onInputChange: (value: string) => void
-  onSubmit: (e: FormEvent) => void
-  onKeyDown: (e: React.KeyboardEvent) => void
+  dataframeId: string | null;
+  inputValue: string;
+  isProcessing: boolean;
+  onFileUpload: (files: File[]) => void;
+  onInputChange: (value: string) => void;
+  onSubmit: (e: FormEvent) => void;
+  onKeyDown: (e: React.KeyboardEvent) => void;
 }
 
 export function ChatInput({
@@ -20,13 +24,13 @@ export function ChatInput({
   onFileUpload,
   onInputChange,
   onSubmit,
-  onKeyDown
+  onKeyDown,
 }: ChatInputProps) {
   return (
     <div className="border-t p-4">
       {!dataframeId ? (
         <Dropzone
-          accept={{ "csv": [".csv"], "xlsx": [".xlsx"]}}
+          accept={{ csv: [".csv"], xlsx: [".xlsx"] }}
           maxFiles={1}
           onDrop={onFileUpload}
           disabled={isProcessing}
@@ -41,14 +45,12 @@ export function ChatInput({
             onChange={(e) => onInputChange(e.target.value)}
             placeholder="Ask a question about your data..."
             disabled={isProcessing}
-            className="flex-1"
+            className="flex-1 bg-white"
             onKeyDown={onKeyDown}
-          />
-          <Button type="submit" disabled={isProcessing || !inputValue.trim()}>
-            Send
-          </Button>
+          >
+          </Textarea>
         </form>
       )}
     </div>
-  )
+  );
 }

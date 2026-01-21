@@ -40,14 +40,14 @@ export function DataChat() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col bg-secondary items-center">
-      <div className="w-screen flex justify-center mb-4">
+    <div className="flex h-[calc(100vh-4rem)] flex-col bg-secondary items-center overflow-y-scroll">
+      <div className="w-screen flex justify-center pb-4 max-w-6xl border-x-2 border-b-2">
         <div className="pb-4 pt-2 px-8 border-b bg-muted-foreground text-center rounded-b-4xl">
           <h1 className="text-2xl font-bold text-primary-foreground">Intelligent Data Room</h1>
           <p className="text-sm text-primary-foreground/70">Upload your CSV and start querying your data!</p>
         </div>
       </div>
-      <div className="h-screen flex-col flex max-w-6xl w-full">
+      <div className="h-screen flex-col flex max-w-6xl w-full border-x-2">
         <ChatMessages messages={messages} currentPlan={currentPlan} isProcessing={isProcessing} />
         <ChatInput
           dataframeId={dataframeId}
