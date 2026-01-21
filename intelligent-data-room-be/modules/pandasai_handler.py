@@ -74,10 +74,9 @@ class PandasAIHandler:
         df = self.dataframes[df_id]
         response = df.chat(plan)
         
-        # Check if response is a ChartResponse object (contains image path)
+        # Check if response is a ChartResponse object, the type that PandasAI uses for charts
         response_str = str(response)
         if hasattr(response, '__class__') and 'ChartResponse' in response.__class__.__name__:
-            # It's a chart, convert to base64
             image_path = response_str
             base64_result = image_to_base64(image_path)
             return base64_result if base64_result else image_path

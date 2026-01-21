@@ -13,8 +13,6 @@ api_key, model_name = env.get_api_and_model()
 pandas_handler = None
 planner = None
 
-dataframe_header = None
-
 class APIHandler:
     """Handles the logic of API endpoints"""
 
@@ -92,34 +90,31 @@ class APIHandler:
             raise HTTPException(status_code=500, detail=f"PandasAI Upload Prompt Test Failed: {str(e)}")
 
     @staticmethod
-    async def upload_get_head(file: UploadFile):
-        """Uploads a CSV and retrieves its head"""
+    async def upload(file: UploadFile):
+        """Uploads a CSV and returns a dataframe ID"""
         try:
-            global dataframe_header
             dataframe_id = pandas_handler.add_dataframe(file.file)
-            header = pandas_handler.get_head(dataframe_id)
-        
-            dataframe_header = header
-
             return {
                 "status": "success",
                 "dataframe_id": dataframe_id,
-                "filename": file.filename,
-                "header": header
+                "filename": file.filename
             }
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Upload Get Head Failed: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Upload Failed: {str(e)}")
     
     @staticmethod
-    async def generate_plan_from_prompt(prompt: str):
+    async def generate_plan_from_prompt(dataframe_id: str, prompt: str):
         """Generates a plan from a given prompt using the Planner"""
         try:
-            if dataframe_header is None:
-                raise Exception("Dataframe header not set. Please upload a dataframe first.")
+            # Get the dataframe header
+            header = pandas_handler.get_head(dataframe_id)
+            if header == "Dataframe not found.":
+                raise Exception(f"Dataframe with ID {dataframe_id} not found.")
             
-            plan = planner.generate_plan(prompt, dataframe_header)
+            plan = planner.generate_plan(prompt, header)
             return {
                 "status": "success",
+                "dataframe_id": dataframe_id,
                 "prompt": prompt,
                 "plan": plan
             }

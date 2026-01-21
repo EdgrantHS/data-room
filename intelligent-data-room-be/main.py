@@ -23,14 +23,14 @@ async def test_upload_pandas(file: UploadFile = File()):
 async def test_upload_prompt(file: UploadFile = File(), prompt: str = Form()): 
     return await APIHandler.test_upload_prompt(file, prompt)
 
-@app.post("/upload-get-head")
-async def upload_get_head(file: UploadFile = File()):
-    return await APIHandler.upload_get_head(file)
+@app.post("/upload")
+async def upload(file: UploadFile = File()):
+    return await APIHandler.upload(file)
 
 @app.post("/generate-plan")
-async def generate_plan(prompt: str = Form()):
-    return await APIHandler.generate_plan_from_prompt(prompt)
+async def generate_plan(dataframe_id: str = Form(...), prompt: str = Form(...)):
+    return await APIHandler.generate_plan_from_prompt(dataframe_id, prompt)
 
 @app.post("/execute-plan")
-async def execute_plan(dataframe_id: str = Form(), plan: str = Form()):
+async def execute_plan(dataframe_id: str = Form(...), plan: str = Form(...)):
     return await APIHandler.execute_plan_on_dataframe(dataframe_id, plan)
